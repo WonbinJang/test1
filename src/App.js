@@ -1,12 +1,13 @@
 import React from 'react';
 import Header from './Header';
 import Nav from './Nav';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Login from './login';
 import './App.css';
 import { Link } from 'react-router-dom';
 import SideBar from './Sidebar';
 import axios from 'axios';
+
 function App() {
   const [backlogs, setBacklogs] = useState([]);
   const [todos, setTodos] = useState([]);
@@ -56,7 +57,50 @@ function App() {
         console.log(error);
       });
   }, []);
+  function Updatelists() {
+    axios.get('/api/TodoItems/Backlogs').then((response) => {
+      try {
+        const data = response.data;
 
+        setBacklogs(data);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    axios.get('/api/TodoItems/Todo').then((response) => {
+      try {
+        const data = response.data;
+
+        setTodos(data);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    axios.get('/api/TodoItems/Doing').then((response) => {
+      try {
+        const data = response.data;
+
+        setDoings(data);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    axios
+      .get('/api/TodoItems/Done')
+      .then((response) => {
+        try {
+          const data = response.data;
+
+          setDones(data);
+        } catch (error) {
+          console.log(error);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  const target = useRef(null);
   //status: Backlog, Todo, Doing, Dones);
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -105,10 +149,30 @@ function App() {
         </Link>
       </Header>
       <div className='list'>
-        <Nav title='backlogs' list={backlogs} setBacklogs={setBacklogs} />
-        <Nav title='Todo' list={todos}></Nav>
-        <Nav title='In Progress' list={doings}></Nav>
-        <Nav title='Done' list={dones}></Nav>
+        <Nav
+          title='backlogs'
+          list={backlogs}
+          setList={setBacklogs}
+          Updatelists={Updatelists}
+        />
+        <Nav
+          title='Todo'
+          list={todos}
+          setList={setTodos}
+          Updatelists={Updatelists}
+        ></Nav>
+        <Nav
+          title='In Progress'
+          list={doings}
+          setList={setDoings}
+          Updatelists={Updatelists}
+        ></Nav>
+        <Nav
+          title='Done'
+          list={dones}
+          setList={setDones}
+          Updatelists={Updatelists}
+        ></Nav>
       </div>
       <SideBar>
         <Login></Login>

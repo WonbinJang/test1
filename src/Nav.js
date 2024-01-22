@@ -1,33 +1,82 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import './Nav.css';
 import { Button, Radio } from '@mui/material';
-import { IntersectionObserver } from 'react-intersection-observer';
-import { useInView } from 'react-intersection-observer';
+
+// import { IntersectionObserver } from 'react-intersection-observer';
+
 import axios from 'axios';
 
 function Nav(props) {
-  const floorRef = useRef < HTMLDivElement > null;
-  const Num = useRef(0);
-  const [count, setCount] = useState(Num);
-  let options = {
-    root: document.querySelector('#scrollArea'),
-    rootMargin: '0px',
-    threshold: 1.0,
-  };
+  let [count, setCount] = useState(40);
+
+  const [ref, inView] = useInView();
+  useEffect(() => {
+    // inView가 true 일때만 실행한다.
+    if (inView) {
+      console.log(inView, '무한 스크롤 요청 🎃');
+      setCount(count + 40);
+    }
+  }, [inView]);
+
+  // const target = useRef();
+  // useEffect(() => {
+  //   const floor = target.current;
+  //   const options = {
+  //     threshold: 1.0,
+  //   };
+  //   const callback = (entries) => {
+  //     if (entries[0].isIntersecting) {
+  //       console.log('관측되었습니다');
+  //       setCount(count + 40);
+  //       console.log(count);
+  //     }
+  //   };
+  //   const observer = new IntersectionObserver(callback, options);
+  //   console.log(observer);
+  //   if (floor) {
+  //     observer.observe(floor);
+  //   }
+
+  //   return () => {
+  //     if (floor) {
+  //       observer.unobserve(floor);
+  //     }
+  //   };
+  // }, []);
+
+  /*useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll); //clean up
+    };
+  }, []);
+
+  const handleScroll = () => {
+    // 스크롤이 Top에서 50px 이상 내려오면 true값을 useState에 넣어줌
+    if (window.scrollY >= 30) {
+      setScroll(true);
+      console.log(scroll);
+    } else {
+      // 스크롤이 50px 미만일경우 false를 넣어줌
+      setScroll(false);
+      console.log(scroll);
+    }
+  }; */
   // let intersectionObserver = new IntersectionObserver(callback, options);
-  let callback = (entries) => {
-    entries.forEach((entry) => {
-      // Each entry describes an intersection change for one observed
-      // target element:
-      //   entry.boundingClientRect
-      //   entry.intersectionRatio
-      //   entry.intersectionRect
-      //   entry.isIntersecting
-      //   entry.rootBounds
-      //   entry.target
-      //   entry.time
-    });
-  };
+  // let callback = (entries) => {
+  //   entries.forEach((entry) => {
+  // Each entry describes an intersection change for one observed
+  // target element:
+  //   entry.boundingClientRect
+  //   entry.intersectionRatio
+  //   entry.intersectionRect
+  //   entry.isIntersecting
+  //   entry.rootBounds
+  //   entry.target
+  //   entry.time
+  //   });
+  // };
   // useEffect(() => {
   //   const observer = new IntersectionObserver((entries) => {
   //     const target = entries[0];
@@ -50,7 +99,7 @@ function Nav(props) {
   //   };
   // }, [floorRef, count]);
 
-  const lists = props.list.slice(0, 40).map((v) => (
+  const lists = props.list.slice(0, count).map((v) => (
     <li key={v.id}>
       <Button
         sx={{ textTransform: 'unset' }}
@@ -63,13 +112,23 @@ function Nav(props) {
         }}
       >
         {v.title}
+
         <button
           variant='text'
-          key={v.id}
+          value='Todo'
           onClick={() => {
-            axios.post(`api/TodoItems/statusTodo/${v.id}`).then((response) => {
-              console.log(response);
-            });
+            const handleSignUp = async () => {
+              try {
+                await axios.post('api/TodoItems/status', {
+                  id: `${v.id}`,
+                  status: 2,
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            };
+            handleSignUp();
+            props.Updatelists();
           }}
         >
           Todo
@@ -79,9 +138,18 @@ function Nav(props) {
           variant='text'
           value='Doing'
           onClick={() => {
-            axios.post(`api/TodoItems/statusDoing/${v.id}`).then((response) => {
-              console.log(response);
-            });
+            const handleSignUp = async () => {
+              try {
+                await axios.post('api/TodoItems/status', {
+                  id: `${v.id}`,
+                  status: 3,
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            };
+            handleSignUp();
+            props.Updatelists();
           }}
         >
           Doing
@@ -90,9 +158,18 @@ function Nav(props) {
           variant='text'
           value='Done'
           onClick={() => {
-            axios.post(`api/TodoItems/statusDone/${v.id}`).then((response) => {
-              console.log(response);
-            });
+            const handleSignUp = async () => {
+              try {
+                await axios.post('api/TodoItems/status', {
+                  id: `${v.id}`,
+                  status: 4,
+                });
+              } catch (error) {
+                console.log(error);
+              }
+            };
+            handleSignUp();
+            props.Updatelists();
           }}
         >
           Done
@@ -100,12 +177,14 @@ function Nav(props) {
       </Button>
     </li>
   ));
+
   return (
     <div className='ComponentBox'>
       <header>
         <h2>{props.title}</h2>
       </header>
       {<div>{lists}</div>}
+      <p ref={ref}></p>
     </div>
   );
 }
