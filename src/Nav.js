@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import './Nav.css';
 import { Button, Radio } from '@mui/material';
-
+import ButtonGroup from '@mui/material/ButtonGroup';
 // import { IntersectionObserver } from 'react-intersection-observer';
 
 import axios from 'axios';
@@ -112,68 +112,69 @@ function Nav(props) {
         }}
       >
         {v.title}
+        <ButtonGroup
+          variant='contained'
+          aria-label='outlined primary button group'
+        >
+          <button
+            value='Todo'
+            onClick={() => {
+              const handleSignUp = async () => {
+                try {
+                  await axios.post('api/TodoItems/status', {
+                    id: `${v.id}`,
+                    status: 2,
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+              };
+              handleSignUp();
+              props.Updatelists();
+            }}
+          >
+            Todo
+          </button>
 
-        <button
-          variant='text'
-          value='Todo'
-          onClick={() => {
-            const handleSignUp = async () => {
-              try {
-                await axios.post('api/TodoItems/status', {
-                  id: `${v.id}`,
-                  status: 2,
-                });
-              } catch (error) {
-                console.log(error);
-              }
-            };
-            handleSignUp();
-            props.Updatelists();
-          }}
-        >
-          Todo
-        </button>
-
-        <button
-          variant='text'
-          value='Doing'
-          onClick={() => {
-            const handleSignUp = async () => {
-              try {
-                await axios.post('api/TodoItems/status', {
-                  id: `${v.id}`,
-                  status: 3,
-                });
-              } catch (error) {
-                console.log(error);
-              }
-            };
-            handleSignUp();
-            props.Updatelists();
-          }}
-        >
-          Doing
-        </button>
-        <button
-          variant='text'
-          value='Done'
-          onClick={() => {
-            const handleSignUp = async () => {
-              try {
-                await axios.post('api/TodoItems/status', {
-                  id: `${v.id}`,
-                  status: 4,
-                });
-              } catch (error) {
-                console.log(error);
-              }
-            };
-            handleSignUp();
-            props.Updatelists();
-          }}
-        >
-          Done
-        </button>
+          <button
+            value='Doing'
+            onClick={() => {
+              const handleSignUp = async () => {
+                try {
+                  await axios.post('api/TodoItems/status', {
+                    id: `${v.id}`,
+                    status: 3,
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+              };
+              handleSignUp();
+              props.Updatelists();
+            }}
+          >
+            Doing
+          </button>
+          <button
+            value='Done'
+            onClick={() => {
+              const handleSignUp = async () => {
+                try {
+                  await axios.post('api/TodoItems/status', {
+                    id: `${v.id}`,
+                    status: 4,
+                  });
+                } catch (error) {
+                  console.log(error);
+                }
+              };
+              handleSignUp();
+              props.Updatelists();
+            }}
+          >
+            Done
+          </button>
+        </ButtonGroup>
       </Button>
     </li>
   ));
