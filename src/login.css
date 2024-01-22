@@ -1,0 +1,8 @@
+.Box {
+  align-items: center;
+}
+.loginbtn {
+  padding: 10px 10px;
+  border-radius: 10px;
+  background-color: white;
+}

@@ -1,0 +1,15 @@
+.ComponentBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: normal;
+}
+.button {
+  min-width: 150px;
+  min-height: 40px;
+  padding: auto;
+  border-radius: 10px;
+  background-color: white;
+}
+.button :hover {
+  background-color: blueviolet;
+}

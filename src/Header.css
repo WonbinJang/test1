@@ -1,0 +1,9 @@
+.loginbtn{
+    padding: 10px 20px; 
+
+}
+.headerlogin{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
