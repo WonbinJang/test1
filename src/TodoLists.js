@@ -1,13 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
-import './Nav.css';
-import { Button, Radio } from '@mui/material';
-import ButtonGroup from '@mui/material/ButtonGroup';
-// import { IntersectionObserver } from 'react-intersection-observer';
+import './TodoLists.css';
+import Box from '@mui/material/Box';
+import Card from './Card';
 
-import axios from 'axios';
-
-function Nav(props) {
+function TodoLists(props) {
   let [count, setCount] = useState(40);
 
   const [ref, inView] = useInView();
@@ -15,7 +12,7 @@ function Nav(props) {
     // inView가 true 일때만 실행한다.
     if (inView) {
       console.log(inView, '무한 스크롤 요청 🎃');
-      setCount(count + 40);
+      setCount(count + 10);
     }
   }, [inView]);
 
@@ -44,7 +41,6 @@ function Nav(props) {
   //     }
   //   };
   // }, []);
-
   /*useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -99,95 +95,65 @@ function Nav(props) {
   //   };
   // }, [floorRef, count]);
 
-  const lists = props.list.slice(0, count).map((v) => (
-    <li key={v.id}>
-      <Button
-        sx={{ textTransform: 'unset' }}
-        variant='text'
-        key={v.id}
-        onClick={() => {
-          axios
-            .get(`api/TodoItems/${v.id}`)
-            .then((response) => console.log(response.data));
-        }}
-      >
-        {v.title}
-        <ButtonGroup
-          variant='contained'
-          aria-label='outlined primary button group'
-        >
-          <button
-            value='Todo'
-            onClick={() => {
-              const handleSignUp = async () => {
-                try {
-                  await axios.post('api/TodoItems/status', {
-                    id: `${v.id}`,
-                    status: 2,
-                  });
-                } catch (error) {
-                  console.log(error);
-                }
-              };
-              handleSignUp();
-              props.Updatelists();
-            }}
-          >
-            Todo
-          </button>
-
-          <button
-            value='Doing'
-            onClick={() => {
-              const handleSignUp = async () => {
-                try {
-                  await axios.post('api/TodoItems/status', {
-                    id: `${v.id}`,
-                    status: 3,
-                  });
-                } catch (error) {
-                  console.log(error);
-                }
-              };
-              handleSignUp();
-              props.Updatelists();
-            }}
-          >
-            Doing
-          </button>
-          <button
-            value='Done'
-            onClick={() => {
-              const handleSignUp = async () => {
-                try {
-                  await axios.post('api/TodoItems/status', {
-                    id: `${v.id}`,
-                    status: 4,
-                  });
-                } catch (error) {
-                  console.log(error);
-                }
-              };
-              handleSignUp();
-              props.Updatelists();
-            }}
-          >
-            Done
-          </button>
-        </ButtonGroup>
-      </Button>
-    </li>
-  ));
-
   return (
     <div className='ComponentBox'>
       <header>
         <h2>{props.title}</h2>
       </header>
-      {<div>{lists}</div>}
+      {
+        <div style={{ gap: '12px', display: 'flex', flexDirection: 'column' }}>
+          {props.list?.slice(0, count).map((v) => (
+            <Box key={v.id} sx={{ maxWidth: 275, whiteSpace: 'pre-wrap' }}>
+              <Card
+                title={v.title}
+                arrayname={props.title}
+                description={v.description}
+                createdAt={v.createdAt}
+                list={props.list}
+                setList={props.setList}
+                variant='outlined'
+                key={v.id}
+                id={v.id}
+                getList={() => props.getList}
+              />
+            </Box>
+          ))}
+        </div>
+      }
       <p ref={ref}></p>
     </div>
   );
+  // const lists = props.list?.slice(0, count).map((v) => (
+  //   <Box sx={{ maxWidth: 275, whiteSpace: 'pre-wrap' }}>
+  //     <Card
+  //       title={v.title}
+  //       arrayname={props.title}
+  //       description={v.description}
+  //       createdAt={v.createdAt}
+  //       list={props.list}
+  //       setList={props.setList}
+  //       variant='outlined'
+  //       key={v.id}
+  //       id={v.id}
+  //       getList={() => props.getList}
+  //     />
+  //     <space></space>
+  //   </Box>
+  // ));
+
+  // return (
+  //   <div className='ComponentBox'>
+  //     <header>
+  //       <h2>{props.title}</h2>
+  //     </header>
+  //     {
+  //       <div style={{ gap: '12px', display: 'flex', flexDirection: 'column' }}>
+  //         {lists}
+  //       </div>
+  //     }
+  //     <p ref={ref}></p>
+  //   </div>
+  // );
 }
 
-export default Nav;
+export default TodoLists;
