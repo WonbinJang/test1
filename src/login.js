@@ -1,7 +1,37 @@
 import React, { useEffect } from 'react';
 import './login.css';
 import axios from 'axios';
+import {
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from 'recoil';
+import { isDisable, userName } from './countState';
+
 function Login(props) {
+  const [name, setName] = useRecoilState(userName);
+  const setRecoilName = useSetRecoilState(userName);
+  const [Disable, setDisable] = useRecoilState(isDisable);
+  const reSetName = useResetRecoilState(userName);
+  const handleSignUp = async () => {
+    const response = await axios.post('/api/TodoItems/user/login', {
+      userName: 'Bruno Mars',
+      Password: '24K Magic',
+    });
+    console.log(response.data);
+    await reSetName();
+    await setName(response.data);
+    await setDisable(false);
+  };
+
+  // export default function generateUUID() {
+  //   return ‘xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx’.replace(/[xy]/g, function(c) {
+  //     var r = Math.random() * 16 | 0,
+  //         v = c == ‘x’ ? r : (r & 0x3 | 0x8);
+  //     return v.toString(16);
+  //   });
+  // }
   return (
     <div className='Box'>
       <header>
@@ -14,25 +44,7 @@ function Login(props) {
         <input type='password'></input>
         <button
           className='loginbtn'
-          type='submit'
           onClick={() => {
-            const handleSignUp = async () => {
-              try {
-                await axios
-                  .post('api/TodoItems/user/login', {
-                    userName: 'Bruno Mars',
-                    Password: '24K Magic',
-                  })
-                  .then((response) => {
-                    if (response.Ok) {
-                      console.log(response.data);
-                      props.userName = response.data;
-                    }
-                  });
-              } catch (error) {
-                console.log(error);
-              }
-            };
             handleSignUp();
           }}
         >

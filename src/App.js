@@ -7,28 +7,33 @@ import './App.css';
 import { Link } from 'react-router-dom';
 import SideBar from './Sidebar';
 import axios from 'axios';
-import atom from 'recoil';
-import { useRecoilState, useSetRecoilState, useResetRecoilState } from 'recoil';
+import {
+  useRecoilState,
+  useSetRecoilState,
+  useResetRecoilState,
+  useRecoilValue,
+} from 'recoil';
+import {
+  Backlogs,
+  Todos,
+  Doings,
+  Dones,
+  userName,
+  isDisable,
+} from './countState';
 
-export const getList = async (status) => {
-  let value = [];
-
-  await axios.get(`/api/TodoItems/${status}`).then((response) => {
-    value = response.data;
-  });
+export const GetList = async (status) => {
+  const response = await axios.get(`/api/TodoItems/${status}`);
   // console.log('마이컨텍스트', value);
-  return value;
+  return response.data;
 };
+export const GetuserName = async (status) => {
+  const response = await axios.post('/api/TodoItems/user/login', {
+    userName: '',
+    Password: '',
+  });
 
-export const changeStatus = async (key, status) => {
-  try {
-    await axios.post('api/TodoItems/status', {
-      id: `${key}`,
-      status: `${status}`,
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  return response.data;
 };
 
 // props 계속 내린다
@@ -36,25 +41,27 @@ export const changeStatus = async (key, status) => {
 // 전역 상태 관리 라이브러리
 
 function App() {
-  const [backlogs, setBacklogs] = useState([]);
-  const [todos, setTodos] = useState([]);
-  const [doings, setDoings] = useState([]);
-  const [dones, setDones] = useState([]);
-  const [userName, setUserName] = useState([]);
-  // console.log('app.js', getList('Backlogs'));
+  const [backlogs, setBacklogs] = useRecoilState(Backlogs);
+  const [todos, setTodos] = useRecoilState(Todos);
+  const [doings, setDoings] = useRecoilState(Doings);
+  const [dones, setDones] = useRecoilState(Dones);
+  const name = useRecoilValue(userName);
+  const [Disable, setDisable] = useRecoilState(isDisable);
+
+  // GetuserName();
 
   useEffect(() => {
-    getList('Backlogs').then((response) => {
-      setBacklogs(response[0]);
+    GetList('Backlogs').then((response) => {
+      setBacklogs(response);
     });
-    getList('Todo').then((response) => {
-      setTodos(response[0]);
+    GetList('Todo').then((response) => {
+      setTodos(response);
     });
-    getList('Doing').then((response) => {
-      setDoings(response[0]);
+    GetList('Doing').then((response) => {
+      setDoings(response);
     });
-    getList('Done').then((response) => {
-      setDones(response[0]);
+    GetList('Done').then((response) => {
+      setDones(response);
     });
     return () => {};
   }, []);
@@ -66,39 +73,15 @@ function App() {
           <button>login</button>
         </Link>
       </Header>
-      <div>{userName}</div>
+      <div>{name}</div>
       <div className='list'>
-        <TodoLists
-          title='backlogs'
-          list={backlogs}
-          setList={setBacklogs}
-          getList={() => {
-            getList('Backlogs').then((todos) => {
-              setBacklogs(todos);
-            });
-          }}
-        />
-        <TodoLists
-          title='Todo'
-          list={todos}
-          setList={setTodos}
-          getList={() => getList}
-        ></TodoLists>
-        <TodoLists
-          title='In Progress'
-          list={doings}
-          setList={setDoings}
-          getList={getList}
-        ></TodoLists>
-        <TodoLists
-          title='Done'
-          list={dones}
-          setList={setDones}
-          getList={() => getList}
-        ></TodoLists>
+        <TodoLists title='Backlogs' list={backlogs} />
+        <TodoLists title='Todo' list={todos} />
+        <TodoLists title='Doing' list={doings} />
+        <TodoLists title='Done' list={dones} />
       </div>
       <SideBar>
-        <Login userName={userName} setUserName={setUserName}></Login>
+        <Login userName={name}></Login>
       </SideBar>
     </div>
   );

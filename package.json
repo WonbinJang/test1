@@ -18,6 +18,7 @@
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
     "recoil": "^0.7.7",
+    "typescript": "^5.3.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -44,5 +45,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5234"
+  "proxy": "http://localhost:5234",
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
 }

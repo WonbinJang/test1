@@ -7,22 +7,75 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import { getList, changeStatus, backlogList } from './App';
-import { useEffect } from 'react';
+import { GetList } from './App';
+import {
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from 'recoil';
+import {
+  Backlogs,
+  Doings,
+  Dones,
+  Todos,
+  isDisable,
+  userName,
+} from './countState';
 
-// const getList = async (status) => {
-//   let list = [];
-//   await axios.get(`/api/TodoItems/${status}`).then((response) => {
-//     list.push(response.data);
-//   });
-//   return list;
-// };
-const card = (title, description, createdAt, key, list, setList, arrayname) => {
+const CardCon = (title, description, User, createdAt, key, arrayname) => {
+  const setRecoilBacklogs = useSetRecoilState(Backlogs);
+  const reSetBacklogs = useResetRecoilState(Backlogs);
+  const setRecoilTodos = useSetRecoilState(Todos);
+  const reSetTodos = useResetRecoilState(Todos);
+  const setRecoilDoings = useSetRecoilState(Doings);
+  const reSetDoings = useResetRecoilState(Doings);
+  const setRecoilDones = useSetRecoilState(Dones);
+  const reSetDones = useResetRecoilState(Dones);
+  const [name, setName] = useRecoilState(userName);
+  const [Disable, setDisable] = useRecoilState(isDisable);
+
+  const changeStatus = async (key, status) => {
+    try {
+      await axios.post('api/TodoItems/status', {
+        id: `${key}`,
+        status: `${status}`,
+        userName: `${name}`,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // const userName = useRecoilValue(userName);
+  //Warning: Each child in a list should have a unique "key" prop.
+  const UpdateList = (listName) => {
+    if (listName === 'Todo') {
+      GetList('Todo').then((response) => {
+        reSetTodos();
+        setRecoilTodos(response);
+      });
+    } else if (listName === 'Doing') {
+      GetList('Doing').then((response) => {
+        reSetDoings();
+        setRecoilDoings(response);
+      });
+    } else if (listName === 'Done') {
+      GetList('Done').then((response) => {
+        reSetDones();
+        setRecoilDones(response);
+      });
+    } else if (listName === 'Backlogs') {
+      GetList('Backlogs').then((response) => {
+        reSetBacklogs();
+        setRecoilBacklogs(response);
+      });
+    }
+  };
   return (
     <React.Fragment>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
-          userName
+          {User}
         </Typography>
         <Typography variant='h5' component='div'>
           {title}
@@ -41,38 +94,35 @@ const card = (title, description, createdAt, key, list, setList, arrayname) => {
           aria-label='outlined primary button group'
         >
           <Button
+            disabled={Disable}
             value='Todo'
-            onClick={() => {
-              // 새로운걸 받아왔는데
-              getList('Todo').then((todos) => {
-                backlogList = todos;
-                // 뭘해야 하는가?
-                // 상태는 저기 위에 있음.
-              });
-
-              //   getList('Todo');
-              //   getList({ arrayname });
+            onClick={async () => {
+              await changeStatus(key, 2);
+              await UpdateList('Todo');
+              await UpdateList(arrayname);
             }}
           >
             Todo
           </Button>
 
           <Button
+            disabled={Disable}
             value='Doing'
-            onClick={() => {
-              changeStatus(key, 3);
-              //   getList('Doing');
-              //   getList({ arrayname });
+            onClick={async () => {
+              await changeStatus(key, 3);
+              await UpdateList('Doing');
+              await UpdateList(arrayname);
             }}
           >
             Doing
           </Button>
           <Button
+            disabled={Disable}
             value='Done'
-            onClick={() => {
-              changeStatus(key, 4);
-              //   getList('Done');
-              //   getList({ arrayname });
+            onClick={async () => {
+              await changeStatus(key, 4);
+              await UpdateList('Done');
+              await UpdateList(arrayname);
             }}
           >
             Done
@@ -87,13 +137,12 @@ export default function OutlinedCard(props) {
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant='outlined'>
-        {card(
+        {CardCon(
           props.title,
           props.description,
+          props.userName,
           props.createdAt,
           props.id,
-          props.list,
-          props.setList,
           props.arrayname
         )}
       </Card>

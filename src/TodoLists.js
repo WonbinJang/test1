@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Card from './Card';
 
 function TodoLists(props) {
-  let [count, setCount] = useState(40);
+  let [count, setCount] = useState(0);
 
   const [ref, inView] = useInView();
   useEffect(() => {
@@ -103,9 +103,10 @@ function TodoLists(props) {
       {
         <div style={{ gap: '12px', display: 'flex', flexDirection: 'column' }}>
           {props.list?.slice(0, count).map((v) => (
-            <Box key={v.id} sx={{ maxWidth: 275, whiteSpace: 'pre-wrap' }}>
+            <Box key={v.id} sx={{ maxWidth: 248 }}>
               <Card
                 title={v.title}
+                userName={v.userName}
                 arrayname={props.title}
                 description={v.description}
                 createdAt={v.createdAt}
@@ -114,7 +115,6 @@ function TodoLists(props) {
                 variant='outlined'
                 key={v.id}
                 id={v.id}
-                getList={() => props.getList}
               />
             </Box>
           ))}
